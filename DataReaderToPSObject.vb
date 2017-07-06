@@ -17,7 +17,12 @@
     End Class
 
     Public Shared Iterator Function Translate(dataReader As IDataReader) As IEnumerable(Of PSObject)
-        Dim MapList = dataReader.GetSchemaTable.AsEnumerable.Select(Function(x) New Map(x("ColumnOrdinal"), x("DataType").Name, x("AllowDBNull"), x("ColumnName"))).ToList
+        Dim MapList As New List(Of Map), Ord As Integer = 0
+        For Each x In dataReader.GetSchemaTable.AsEnumerable.OrderBy(Function(r) r("ColumnOrdinal")).ToList
+            MapList.Add(New Map(Ord, x("DataType").Name, x("AllowDBNull"), x("ColumnName")))
+            Ord += 1
+        Next
+
 
         While dataReader.Read
             Dim psObj As New PSObject
