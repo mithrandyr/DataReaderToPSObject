@@ -31,38 +31,44 @@
                     If m.AllowNull AndAlso dataReader.IsDBNull(m.Ordinal) Then
                         .Add(New PSNoteProperty(m.Name, Nothing), True)
                     Else
-                        Select Case m.DataType
-                            Case "Boolean"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetBoolean(m.Ordinal)), True)
-                            Case "Byte"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetByte(m.Ordinal)), True)
-                            Case "Char"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetChar(m.Ordinal)), True)
-                            Case "DateTime"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetDateTime(m.Ordinal)), True)
-                            Case "Decimal"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetDecimal(m.Ordinal)), True)
-                            Case "Double"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetDouble(m.Ordinal)), True)
-                            Case "Single"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetFloat(m.Ordinal)), True)
-                            Case "Guid"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetGuid(m.Ordinal)), True)
-                            Case "Int16"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetInt16(m.Ordinal)), True)
-                            Case "Int32"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetInt32(m.Ordinal)), True)
-                            Case "Int64"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetInt64(m.Ordinal)), True)
-                            Case "String"
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetString(m.Ordinal)), True)
-                            Case Else
-                                .Add(New PSNoteProperty(m.Name, dataReader.GetValue(m.Ordinal)), True)
-                        End Select
+                        Try
+                            Select Case m.DataType
+                                Case "Boolean"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetBoolean(m.Ordinal)), True)
+                                Case "Byte"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetByte(m.Ordinal)), True)
+                                Case "Char"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetChar(m.Ordinal)), True)
+                                Case "DateTime"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetDateTime(m.Ordinal)), True)
+                                Case "Decimal"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetDecimal(m.Ordinal)), True)
+                                Case "Double"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetDouble(m.Ordinal)), True)
+                                Case "Single"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetFloat(m.Ordinal)), True)
+                                Case "Guid"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetGuid(m.Ordinal)), True)
+                                Case "Int16"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetInt16(m.Ordinal)), True)
+                                Case "Int32"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetInt32(m.Ordinal)), True)
+                                Case "Int64"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetInt64(m.Ordinal)), True)
+                                Case "String"
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetString(m.Ordinal)), True)
+                                Case Else
+                                    .Add(New PSNoteProperty(m.Name, dataReader.GetValue(m.Ordinal)), True)
+                            End Select
+                        Catch ex As Exception
+                            Dim msg As String = String.Format("Failed to translate, ColumnName = {0} | ColumnOrdinal = {1} | ColumnType = {2} | ToStringValue = '{3}' | See InnerException for details", m.Name, m.Ordinal, m.DataType, dataReader.GetValue(m.Ordinal).ToString)
+                            Throw New Exception(msg, ex)
+                        End Try
                     End If
                 End With
             Next
             Yield psObj
         End While
+
     End Function
 End Class
