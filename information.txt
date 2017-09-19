@@ -1,0 +1,42 @@
+﻿https://stackoverflow.com/questions/1464883/how-can-i-easily-convert-datareader-to-listt
+
+ have written the following method using this case.
+First, add the namespace: System.Reflection 
+For Example: T is return type(ClassName) and dr is parameter to mapping DataReader
+C#, Call mapping method like the following:
+List<Person> personList = new List<Person>();
+personList = DataReaderMapToList<Person>(dataReaderForPerson);
+This is the mapping method:
+public static List<T> DataReaderMapToList<T>(IDataReader dr)
+{
+    List<T> list = new List<T>();
+    T obj = default(T);
+    while (dr.Read()) {
+        obj = Activator.CreateInstance<T>();
+        foreach (PropertyInfo prop in obj.GetType().GetProperties()) {
+            if (!object.Equals(dr[prop.Name], DBNull.Value)) {
+                prop.SetValue(obj, dr[prop.Name], null);
+            }
+        }
+        list.Add(obj);
+    }
+    return list;
+}
+VB.NET, Call mapping method like the following:
+Dim personList As New List(Of Person)
+personList = DataReaderMapToList(Of Person)(dataReaderForPerson)
+This is the mapping method:
+Public Shared Function DataReaderMapToList(Of T)(ByVal dr As IDataReader) As List(Of T)
+        Dim list As New List(Of T)
+        Dim obj As T
+        While dr.Read()
+            obj = Activator.CreateInstance(Of T)()
+            For Each prop As PropertyInfo In obj.GetType().GetProperties()
+                If Not Object.Equals(dr(prop.Name), DBNull.Value) Then
+                    prop.SetValue(obj, dr(prop.Name), Nothing)
+                End If
+            Next
+            list.Add(obj)
+        End While
+        Return list
+    End Function

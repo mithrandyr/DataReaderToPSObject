@@ -6,3 +6,4 @@ mapped from the columns.
 
 Attempted to duplicate this code in native PowerShell resulted in a
 performance penalty of 3.5x over not using the switch.
+
