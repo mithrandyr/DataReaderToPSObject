@@ -2,15 +2,15 @@
     Private Class Map
         Public Ordinal As Integer
         Public Name As String
-        Public AllowNull As Boolean
+        'Public AllowNull As Boolean
         Public DataType As String
 
-        Public Sub New(ordinal As Integer, datatype As String, allownull As Boolean, Optional name As String = Nothing)
-            If String.IsNullOrWhiteSpace(name) Then name = String.Format("Columne{0}", ordinal + 1)
+        Public Sub New(ordinal As Integer, datatype As String, Optional name As String = Nothing) 'allownull As Boolean, 
+            If String.IsNullOrWhiteSpace(name) Then name = String.Format("Column{0}", ordinal + 1)
 
             Me.Ordinal = ordinal
             Me.Name = name
-            Me.AllowNull = allownull
+            'Me.AllowNull = allownull
             Me.DataType = datatype
         End Sub
 
@@ -19,7 +19,7 @@
     Public Shared Iterator Function Translate(dataReader As IDataReader) As IEnumerable(Of PSObject)
         Dim MapList As New List(Of Map), Ord As Integer = 0
         For Each x In dataReader.GetSchemaTable.AsEnumerable.OrderBy(Function(r) r("ColumnOrdinal")).ToList
-            MapList.Add(New Map(Ord, x("DataType").Name, x("AllowDBNull"), x("ColumnName")))
+            MapList.Add(New Map(Ord, x("DataType").Name, x("ColumnName"))) 'x("AllowDBNull"),
             Ord += 1
         Next
 
@@ -28,7 +28,7 @@
             Dim psObj As New PSObject
             For Each m As Map In MapList
                 With psObj.Members
-                    If m.AllowNull AndAlso dataReader.IsDBNull(m.Ordinal) Then
+                    If dataReader.IsDBNull(m.Ordinal) Then 'm.AllowNull AndAlso dataReader.IsDBNull(m.Ordinal) Then 
                         .Add(New PSNoteProperty(m.Name, Nothing), True)
                     Else
                         Try
